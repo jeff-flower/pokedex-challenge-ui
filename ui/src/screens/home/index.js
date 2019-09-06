@@ -52,10 +52,16 @@ export default function HomeScreen() {
     <S.Container>
       <h1>Pokédex</h1>
       <SearchBox
-        suggestions={data.pokemonMany.map(pokemon => ({
-          label: pokemon.name,
-          value: pokemon.num
-        }))}
+        suggestions={data.pokemonMany
+          .filter(pokemon =>
+            pokemon.type.some(pokemonType =>
+              selectedTypes.includes(pokemonType)
+            )
+          )
+          .map(pokemon => ({
+            label: pokemon.name,
+            value: pokemon.num
+          }))}
       >
         {searchValue => (
           <>
@@ -68,15 +74,15 @@ export default function HomeScreen() {
                     type="checkbox"
                     checked={selectedTypes.includes(type)}
                     onChange={() => {
-                      if (selectedTypes.includes(type)) {
-                        setSelectedTypes(
-                          selectedTypes.filter(
+                      setSelectedTypes(oldTypes => {
+                        if (oldTypes.includes(type)) {
+                          return oldTypes.filter(
                             selectedType => selectedType !== type
-                          )
-                        );
-                      } else {
-                        setSelectedTypes([...selectedTypes, type]);
-                      }
+                          );
+                        } else {
+                          return [...oldTypes, type];
+                        }
+                      });
                     }}
                   />
                 </label>
@@ -84,6 +90,11 @@ export default function HomeScreen() {
             </fieldset>
             <S.Grid>
               {data.pokemonMany
+                .filter(pokemon =>
+                  pokemon.type.some(pokemonType =>
+                    selectedTypes.includes(pokemonType)
+                  )
+                )
                 .filter(pokemon =>
                   searchValue
                     ? _.deburr(pokemon.name.toLowerCase()).includes(
