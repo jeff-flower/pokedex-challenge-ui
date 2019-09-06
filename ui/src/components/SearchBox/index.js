@@ -1,23 +1,23 @@
-import React, { useState } from 'react'
-import Downshift from 'downshift'
-import { Paper, Popper } from '@material-ui/core'
-import _ from 'lodash'
-import { navigate } from '@reach/router'
+import React, { useState } from "react";
+import Downshift from "downshift";
+import { Paper, Popper } from "@material-ui/core";
+import _ from "lodash";
+import { navigate } from "@reach/router";
 
-import * as S from './styled'
+import * as S from "./styled";
 
 function renderInput(inputProps) {
-  const { InputProps, ref, ...other } = inputProps
+  const { InputProps, ref, ...other } = inputProps;
 
   return (
     <S.Input
       InputProps={{
         inputRef: ref,
-        ...InputProps,
+        ...InputProps
       }}
       {...other}
     />
-  )
+  );
 }
 
 function renderSuggestion(suggestionProps) {
@@ -26,13 +26,13 @@ function renderSuggestion(suggestionProps) {
     index,
     itemProps,
     highlightedIndex,
-    selectedItem,
-  } = suggestionProps
-  const isHighlighted = highlightedIndex === index
-  const isSelected = (selectedItem || '').indexOf(suggestion.label) > -1
+    selectedItem
+  } = suggestionProps;
+  const isHighlighted = highlightedIndex === index;
+  const isSelected = (selectedItem || "").indexOf(suggestion.label) > -1;
 
   if (isSelected) {
-    navigate(`/${suggestion.value}`)
+    navigate(`/${suggestion.value}`);
   } else {
     return (
       <S.MenuItem
@@ -41,38 +41,38 @@ function renderSuggestion(suggestionProps) {
         selected={isHighlighted}
         component="div"
         style={{
-          fontWeight: isSelected ? 500 : 400,
+          fontWeight: isSelected ? 500 : 400
         }}
       >
         {suggestion.label}
       </S.MenuItem>
-    )
+    );
   }
 }
 
 function getSuggestions(value, { showEmpty = false } = {}, suggestions) {
-  const inputValue = _.deburr(value.trim()).toLowerCase()
+  const inputValue = _.deburr(value.trim()).toLowerCase();
   if (inputValue.length < 2 && !showEmpty) {
-    return []
+    return [];
   }
   return suggestions.filter(suggestion => {
-    const suggestionLabel = _.deburr(suggestion.label.trim()).toLowerCase()
-    return suggestionLabel.includes(inputValue)
-  })
+    const suggestionLabel = _.deburr(suggestion.label.trim()).toLowerCase();
+    return suggestionLabel.includes(inputValue);
+  });
 }
 
-let popperNode
+let popperNode;
 
 export default function SearchBox({ suggestions, children }) {
-  const [value, setValue] = useState('')
+  const [value, setValue] = useState("");
 
   function stateReducer(state, changes) {
     switch (changes.type) {
       case Downshift.stateChangeTypes.changeInput:
-        setValue(changes.inputValue)
-        return changes
+        setValue(changes.inputValue);
+        return changes;
       default:
-        return changes
+        return changes;
     }
   }
 
@@ -86,11 +86,11 @@ export default function SearchBox({ suggestions, children }) {
         highlightedIndex,
         inputValue,
         isOpen,
-        selectedItem,
+        selectedItem
       }) => {
         const { onBlur, onFocus, ...inputProps } = getInputProps({
-          placeholder: 'Search Pokémon...',
-        })
+          placeholder: "Search Pokémon..."
+        });
 
         return (
           <div>
@@ -101,8 +101,8 @@ export default function SearchBox({ suggestions, children }) {
                 InputLabelProps: getLabelProps({ shrink: true }),
                 inputProps,
                 ref: node => {
-                  popperNode = node
-                },
+                  popperNode = node;
+                }
               })}
               <Popper open={isOpen} anchorEl={popperNode}>
                 <div
@@ -114,7 +114,7 @@ export default function SearchBox({ suggestions, children }) {
                     square
                     style={{
                       marginTop: 8,
-                      width: popperNode ? popperNode.clientWidth : undefined,
+                      width: popperNode ? popperNode.clientWidth : undefined
                     }}
                   >
                     {getSuggestions(inputValue, {}, suggestions).map(
@@ -123,10 +123,10 @@ export default function SearchBox({ suggestions, children }) {
                           suggestion,
                           index,
                           itemProps: getItemProps({
-                            item: suggestion.label,
+                            item: suggestion.label
                           }),
                           highlightedIndex,
-                          selectedItem,
+                          selectedItem
                         })
                     )}
                   </Paper>
@@ -135,8 +135,8 @@ export default function SearchBox({ suggestions, children }) {
             </div>
             {children(inputValue)}
           </div>
-        )
+        );
       }}
     </Downshift>
-  )
+  );
 }
